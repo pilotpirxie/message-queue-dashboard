@@ -1,0 +1,44 @@
+{{> header}}
+
+{{> navbar}}
+
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card card-body">
+                <h3>Configuration</h3>
+                <hr>
+                <form method="post" action="/settings">
+                    <div class="form-group">
+                        <label for="interpreter" class="font-weight-bold">Interpreter:</label>
+                        <select id="interpreter" name="interpreter" value="{{interpreter.value}}" class="form-control">
+                            <option value="/bin/sh">/bin/sh</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timeout" class="font-weight-bold">Timeout:</label>
+                        <input type="number" class="form-control" name="timeout" id="timeout" placeholder="e.g. 600000" required min="3000" value="{{timeout.value}}">
+                    </div>
+
+                    <div class="form-group">
+                        <b>Script body:</b>
+                        <div>
+                            <div style="height: 400px;">
+                                <textarea name="script" id="script-body">{{script.value}}</textarea>
+                                <div class="code-editor" id="settings-editor"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a href="/" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary ml-2">Save configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> footer}}

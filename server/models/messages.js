@@ -1,7 +1,7 @@
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('messages', {
     id: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
@@ -13,6 +13,10 @@ module.exports = function (sequelize, DataTypes) {
     status: {
       type: DataTypes.STRING(),
       allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING(),
+      allowNull: true,
     },
     body: {
       type: DataTypes.TEXT,
@@ -26,8 +30,12 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(),
       allowNull: true,
     },
-    duration: {
-      type: DataTypes.INTEGER(11),
+    processing_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    completed_at: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
     created_at: {

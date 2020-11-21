@@ -6468,13 +6468,13 @@ button.bg-primary:focus {
 }
 
 .bg-secondary {
-  background-color: #373a3c !important;
+  background-color: #d7d8d8 !important;
 }
 
 a.bg-secondary:hover, a.bg-secondary:focus,
 button.bg-secondary:hover,
 button.bg-secondary:focus {
-  background-color: #1f2021 !important;
+  background-color: #d2d2d2 !important;
 }
 
 .bg-success {

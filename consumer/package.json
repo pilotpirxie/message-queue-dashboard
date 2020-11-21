@@ -1,0 +1,15 @@
+{
+  "name": "consumer",
+  "version": "1.0.0",
+  "main": "app.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.797.0",
+    "axios": "^0.21.0",
+    "querystring": "^0.2.0"
+  }
+}
