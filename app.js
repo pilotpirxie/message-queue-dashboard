@@ -5,6 +5,8 @@ const exphbs = require('express-handlebars');
 const sql = require('./config/sequelize');
 const {Messages} = require('./models');
 const handlebarsHelpers = require('./config/handlebars');
+const joi = require('joi');
+const validation = require('./config/validation');
 
 const hbs = exphbs.create({
   helpers: handlebarsHelpers,
@@ -23,15 +25,31 @@ app.set('view engine', 'hbs');
 sql.testConnection();
 
 app.get('/', async (req, res) => {
+  res.redirect('/messages/');
+});
+
+app.get('/messages/:messageId?', [validation({
+  params: {
+    messageId: joi.number().optional()
+  }
+})], async (req, res, next) => {
   try {
     const messages = await Messages.findAll({
       raw: true,
       limit: 100,
       order: [['created_at', 'DESC']]
     });
-    console.log(messages);
+
+    const message = req.params.messageId ? (await Messages.findOne({
+      where: {
+        id: +req.params.messageId
+      },
+      raw: true,
+    })) : null;
+
     res.render('home', {
-      messages
+      messages,
+      message
     });
   } catch (e) {
     next(e);
