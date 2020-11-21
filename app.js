@@ -4,8 +4,10 @@ const path = require('path');
 const exphbs = require('express-handlebars');
 const sql = require('./config/sequelize');
 const {Messages} = require('./models');
+const handlebarsHelpers = require('./config/handlebars');
 
 const hbs = exphbs.create({
+  helpers: handlebarsHelpers,
   extname: '.hbs',
   partialsDir: ['views/partials/', 'views/accounts/partials'],
 });
@@ -22,9 +24,15 @@ sql.testConnection();
 
 app.get('/', async (req, res) => {
   try {
-    const messages = await Messages.findAll();
+    const messages = await Messages.findAll({
+      raw: true,
+      limit: 100,
+      order: [['created_at', 'DESC']]
+    });
     console.log(messages);
-    res.render('home');
+    res.render('home', {
+      messages
+    });
   } catch (e) {
     next(e);
   }

@@ -47,50 +47,30 @@
     <div class="row mt-3">
         <div class="col-4" style="height: calc(100vh - 90px); overflow-y: auto">
             <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">
+                {{#each messages as |message|}}
+                    <a href="/messages/{{message.id}}" class="list-group-item list-group-item-action">
                     <span class="d-flex align-items-center">
-                        <span class="material-icons text-success" style="font-size: 2rem;">check_circle</span>
+                        {{#ifCond message.status '===' 'PENDING'}}
+                            <span class="material-icons text-primary spinner" style="font-size: 2rem;">autorenew</span>
+                        {{/ifCond}}
+                        {{#ifCond message.status '===' 'SUCCESS'}}
+                            <span class="material-icons text-success" style="font-size: 2rem;">check_circle</span>
+                        {{/ifCond}}
+                        {{#ifCond message.status '===' 'ERROR'}}
+                            <span class="material-icons text-danger" style="font-size: 2rem;">error</span>
+                        {{/ifCond}}
+                        {{#ifCond message.status '===' 'WAITING'}}
+                            <span class="material-icons text-dark" style="font-size: 2rem;">history_toggle_off</span>
+                        {{/ifCond}}
                         <div class="ml-2">
                             <div>
-                                <small>20-04-2020 14:31:21</small>
+                                <small>{{dateFormat message.created_at}}</small>
                             </div>
-                            <div>Task #1</div>
+                            <div>{{message.uuid}}</div>
                         </div>
                     </span>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <span class="d-flex align-items-center">
-                        <span class="material-icons text-primary spinner" style="font-size: 2rem;">autorenew</span>
-                        <div class="ml-2">
-                            <div>
-                                <small>20-04-2020 16:32:26</small>
-                            </div>
-                            <div>Task #2</div>
-                        </div>
-                    </span>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <span class="d-flex align-items-center">
-                        <span class="material-icons text-dark" style="font-size: 2rem;">history_toggle_off</span>
-                        <div class="ml-2">
-                            <div>
-                                <small>21-04-2020 17:25:16</small>
-                            </div>
-                            <div>Task #3</div>
-                        </div>
-                    </span>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <span class="d-flex align-items-center">
-                        <span class="material-icons text-danger" style="font-size: 2rem;">error</span>
-                        <div class="ml-2">
-                            <div>
-                                <small>21-04-2020 17:25:16</small>
-                            </div>
-                            <div>Task #3</div>
-                        </div>
-                    </span>
-                </a>
+                    </a>
+                {{/each}}
             </div>
         </div>
         <div class="col-8" style="height: calc(100vh - 90px); overflow-y: auto">

@@ -14,6 +14,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(),
       allowNull: false,
     },
+    body: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     logs: {
       type: DataTypes.TEXT,
       allowNull: true,
