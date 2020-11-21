@@ -2,10 +2,14 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const exphbs = require('express-handlebars');
+const sql = require('./config/sequelize');
+const {Messages} = require('./models');
+
 const hbs = exphbs.create({
   extname: '.hbs',
   partialsDir: ['views/partials/', 'views/accounts/partials'],
 });
+
 app.set('trust proxy', 1);
 app.engine('hbs', hbs.engine);
 app.set('port', process.env.PORT || 3000);
@@ -14,8 +18,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'))
 app.set('view engine', 'hbs');
 
-app.get('/', (req, res) => {
-  res.render('home');
+sql.testConnection();
+
+app.get('/', async (req, res) => {
+  try {
+    const messages = await Messages.findAll();
+    console.log(messages);
+    res.render('home');
+  } catch (e) {
+    next(e);
+  }
 });
 
 app.listen(app.get('port'), () => {
