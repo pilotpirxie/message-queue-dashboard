@@ -11,6 +11,7 @@ app.engine('hbs', hbs.engine);
 app.set('port', process.env.PORT || 3000);
 app.disable('x-powered-by');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'))
 app.set('view engine', 'hbs');
 
 app.get('/', (req, res) => {
