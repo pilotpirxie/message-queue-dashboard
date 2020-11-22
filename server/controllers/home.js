@@ -75,6 +75,8 @@ router.post('/messages', [validation({
   },
 })], async (req, res, next) => {
   try {
+    JSON.parse(req.body.body);
+
     const sqsMessage = await sqs.sendMessage({
       MessageBody: req.body.body,
       QueueUrl: config.SQS.QUEUE_URL,

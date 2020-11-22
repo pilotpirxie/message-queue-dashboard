@@ -70,14 +70,6 @@
                         <li class="list-group-item">Message ID: {{message.uuid}}</li>
                         <li class="list-group-item">Status: {{message.status}}</li>
                         <li class="list-group-item">
-                            Consumer:
-                            {{#if message.consumer}}
-                                {{message.consumer}}
-                            {{else}}
-                                N/A
-                            {{/if}}
-                        </li>
-                        <li class="list-group-item">
                             Processing At:
                             {{#if message.processing_at}}
                                 {{dateFormat message.processing_at}}

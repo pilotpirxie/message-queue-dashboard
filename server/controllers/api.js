@@ -62,7 +62,7 @@ router.get('/messages/:messageUuid', [validation({
 })], async (req, res, next) => {
   try {
     const { messageUuid } = req.params;
-    console.log(messageUuid);
+
     const searchMessage = await Messages.findOne({
       where: {
         uuid: messageUuid.trim(),

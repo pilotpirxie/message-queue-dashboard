@@ -27,10 +27,6 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    consumer: {
-      type: DataTypes.STRING(),
-      allowNull: true,
-    },
     processing_at: {
       type: DataTypes.DATE,
       allowNull: true,

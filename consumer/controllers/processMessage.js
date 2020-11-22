@@ -21,13 +21,16 @@ function processLogData(data, message, logsOutput = []) {
 /**
  * Spawn new process and run script
  *
+ * @param {object} message
  * @param {string} interpreter
  * @param {number} timeout
  * @returns {ChildProcessWithoutNullStreams}
  */
-function spawnProcess(interpreter, timeout) {
+function spawnProcess(message, interpreter, timeout) {
+  const environment = JSON.parse(message.Body);
   return spawn(interpreter, [config.SCRIPT_FILE], {
     cwd: path.join(__dirname, '..', '..', 'workdir'),
+    env: { ...process.env, ...environment },
     timeout,
   });
 }
@@ -44,7 +47,7 @@ function processMessage(message, interpreter, timeout) {
   return new Promise((resolve, reject) => {
     sendPending(message);
 
-    const subProcess = spawnProcess(interpreter, timeout);
+    const subProcess = spawnProcess(message, interpreter, timeout);
 
     const logsOutput = [];
 

@@ -28,6 +28,18 @@ app.use(express.static('public'));
 app.use('/', require('./controllers/home'));
 app.use('/api', require('./controllers/api'));
 
+app.use('*', (req, res) => {
+  res.redirect('/messages/?404');
+});
+
+// eslint-disable-next-line no-unused-vars
+app.use('*', (err, req, res, next) => {
+  if (err) {
+    console.error(err);
+    res.redirect('/messages/?500');
+  }
+});
+
 app.listen(app.get('port'), () => {
   try {
     // eslint-disable-next-line no-console
