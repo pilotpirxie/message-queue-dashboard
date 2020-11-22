@@ -15,7 +15,7 @@ GUI Dashboard for SQS and ElasticMQ with CI/CD consumer.
 * Realtime logs from consumer pipeline
 
 <p align="center">
- <img src="https://i.imgur.com/5dfqNRW.png" alt="Project"/>
+ <img src="https://i.imgur.com/VsqLfjM.png" alt="Project"/>
 </p>
 
 <p align="center">
