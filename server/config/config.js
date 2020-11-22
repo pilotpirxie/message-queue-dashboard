@@ -43,11 +43,6 @@ module.exports = {
      */
     SECRET_ACCESS_KEY: '...',
     /**
-     * Duration, when message is
-     * not visible for other consumers
-     */
-    MESSAGE_VISIBILITY_TIMEOUT: 2 * 60,
-    /**
      * Timeout for message retention
      */
     MESSAGE_RETENTION_PERIOD: 30 * 60,
