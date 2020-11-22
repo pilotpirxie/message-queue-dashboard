@@ -12,6 +12,8 @@ let interpreter = '/bin/sh';
 function process(message) {
   return new Promise((resolve, reject) => {
 
+    console.log('Processing ' + message.MessageId);
+
     axios.put(`${config.API_HOST}/api/messages`, qs.stringify({
       uuid: message.MessageId,
       body: message.Body,
@@ -28,11 +30,25 @@ function process(message) {
     subProcess.stdout.on('data', (data) => {
       console.log(data.toString());
       output.push(data.toString());
+
+      axios.put(`${config.API_HOST}/api/messages`, qs.stringify({
+        uuid: message.MessageId,
+        body: message.Body,
+        status: 'PENDING',
+        logs: output.join('')
+      }));
     });
 
     subProcess.stderr.on('data', (data) => {
       console.log(data.toString());
       output.push(data.toString());
+
+      axios.put(`${config.API_HOST}/api/messages`, qs.stringify({
+        uuid: message.MessageId,
+        body: message.Body,
+        status: 'PENDING',
+        logs: output.join('')
+      }));
     });
 
     subProcess.on('close', (code) => {
@@ -77,8 +93,8 @@ function process(message) {
           fs.rmdirSync(path.join(__dirname, '/workdir'), {
             recursive: true
           });
-          fs.mkdirSync(path.join(__dirname, '/workdir'));
         }
+        fs.mkdirSync(path.join(__dirname, '/workdir'));
         const processConfigResponse = await axios.get(`${config.API_HOST}/api/config`);
         const processConfig = processConfigResponse.data;
         interpreter = processConfig.interpreter;

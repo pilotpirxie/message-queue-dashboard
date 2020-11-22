@@ -1,17 +1,18 @@
 const express = require('express');
+
 const app = express();
 const path = require('path');
 const exphbs = require('express-handlebars');
-const sql = require('./config/sequelize');
-const {Messages, Settings} = require('./models');
-const handlebarsHelpers = require('./config/handlebars');
 const joi = require('joi');
-const validation = require('./config/validation');
-const {sqs} = require('./config/aws');
-const config = require('./config/config');
 const bodyParser = require('body-parser');
-const {Op} = require('sequelize');
+const { Op } = require('sequelize');
 const moment = require('moment');
+const sql = require('./config/sequelize');
+const { Messages, Settings } = require('./models');
+const handlebarsHelpers = require('./config/handlebars');
+const validation = require('./config/validation');
+const { sqs } = require('./config/aws');
+const config = require('./config/config');
 
 const hbs = exphbs.create({
   helpers: handlebarsHelpers,
@@ -19,13 +20,13 @@ const hbs = exphbs.create({
   partialsDir: ['views/partials/', 'views/accounts/partials'],
 });
 
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 app.set('trust proxy', 1);
 app.engine('hbs', hbs.engine);
 app.set('port', process.env.PORT || 3000);
 app.disable('x-powered-by');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static('public'))
+app.use(express.static('public'));
 app.set('view engine', 'hbs');
 
 sql.testConnection();
@@ -36,41 +37,31 @@ app.get('/', async (req, res) => {
 
 app.get('/messages/:messageId?', [validation({
   params: {
-    messageId: joi.number().optional()
-  }
+    messageId: joi.number().optional(),
+  },
 })], async (req, res, next) => {
   try {
     await Messages.update({
-      status: 'CANCEL'
+      status: 'CANCEL',
     }, {
       where: {
-        [Op.or]: [{
-          status: 'WAITING',
-          created_at: {
-            [Op.lte]: moment().subtract(config.SQS.MESSAGE_VISIBILITY_TIMEOUT, 'seconds')
-          }
-        }, {
-          status: 'PENDING',
-          [Op.or]: [{
-            processing_at: {
-              [Op.lte]: moment().subtract(config.SQS.MESSAGE_PROCESSING_TIMEOUT, 'seconds')
-            }
-          }, {
-            processing_at: null
-          }]
-        }]
-      }
+        status: ['WAITING', 'PENDING'],
+        created_at: {
+          [Op.lte]: moment().subtract(config.SQS.MESSAGE_RETENTION_PERIOD, 'seconds'),
+        },
+      },
     });
 
     const messages = await Messages.findAll({
       raw: true,
       limit: 500,
-      order: [['created_at', 'DESC']]
+      attributes: ['id', 'uuid', 'created_at', 'status', 'name'],
+      order: [['created_at', 'DESC']],
     });
 
     const message = req.params.messageId ? (await Messages.findOne({
       where: {
-        id: +req.params.messageId
+        id: +req.params.messageId,
       },
       raw: true,
     })) : null;
@@ -78,30 +69,30 @@ app.get('/messages/:messageId?', [validation({
     return res.render('home', {
       messages,
       message,
-      messageId: +req.params.messageId
+      messageId: +req.params.messageId,
     });
   } catch (e) {
-    next(e);
+    return next(e);
   }
 });
 
 app.get('/settings', async (req, res, next) => {
   try {
     const settings = await Settings.findAll({
-      raw: true
+      raw: true,
     });
 
-    const script = settings.find(el => el.key === 'script');
-    const timeout = settings.find(el => el.key === 'timeout');
-    const interpreter = settings.find(el => el.key === 'interpreter');
+    const script = settings.find((el) => el.key === 'script');
+    const timeout = settings.find((el) => el.key === 'timeout');
+    const interpreter = settings.find((el) => el.key === 'interpreter');
 
     return res.render('settings', {
       script,
       timeout,
-      interpreter
+      interpreter,
     });
   } catch (e) {
-    next(e);
+    return next(e);
   }
 });
 
@@ -110,61 +101,61 @@ app.post('/settings', [validation({
     interpreter: joi.string().required(),
     timeout: joi.string().required(),
     script: joi.string().required(),
-  }
+  },
 })], async (req, res, next) => {
   try {
     await Settings.update({
-      value: req.body.interpreter
+      value: req.body.interpreter,
     }, {
       where: {
-        key: 'interpreter'
-      }
+        key: 'interpreter',
+      },
     });
 
     await Settings.update({
-      value: req.body.timeout
+      value: req.body.timeout,
     }, {
       where: {
-        key: 'timeout'
-      }
+        key: 'timeout',
+      },
     });
 
     await Settings.update({
-      value: req.body.script
+      value: req.body.script,
     }, {
       where: {
-        key: 'script'
-      }
+        key: 'script',
+      },
     });
 
     return res.redirect('/settings');
   } catch (e) {
-    next(e);
+    return next(e);
   }
 });
 
 app.post('/messages', [validation({
   body: {
     body: joi.string().required(),
-    name: joi.string().allow('').optional()
-  }
+    name: joi.string().allow('').optional(),
+  },
 })], async (req, res, next) => {
   try {
     const sqsMessage = await sqs.sendMessage({
       MessageBody: req.body.body,
-      QueueUrl: config.SQS.QUEUE_URL
+      QueueUrl: config.SQS.QUEUE_URL,
     }).promise();
 
     const message = await Messages.create({
       uuid: sqsMessage.MessageId,
       status: 'WAITING',
       name: req.body.name || undefined,
-      body: req.body.body
+      body: req.body.body,
     });
 
     return res.redirect(`/messages/${message.id}`);
   } catch (e) {
-    next(e);
+    return next(e);
   }
 });
 
@@ -175,20 +166,21 @@ app.put('/api/messages', [validation({
     status: joi.valid('WAITING', 'PENDING', 'SUCCESS', 'ERROR').required(),
     name: joi.string().optional(),
     logs: joi.string().allow('').optional(),
-  }
+  },
 })], async (req, res, next) => {
   try {
     const searchMessage = await Messages.findOne({
       where: {
         uuid: req.body.uuid.trim(),
-      }
+        completed_at: null,
+      },
     });
 
     if (searchMessage) {
       await searchMessage.update({
         status: req.body.status,
         body: req.body.body,
-        processing_at: req.body.status === 'PENDING' ? moment() : undefined,
+        processing_at: req.body.status === 'PENDING' && searchMessage.status !== 'PENDING' ? moment() : undefined,
         completed_at: req.body.status === 'SUCCESS' || req.body.status === 'ERROR' ? moment() : undefined,
         logs: req.body.logs || undefined,
       });
@@ -198,42 +190,44 @@ app.put('/api/messages', [validation({
         status: req.body.status,
         name: req.body.name || undefined,
         body: req.body.body,
-        logs: req.body.logs || undefined
+        logs: req.body.logs || undefined,
       });
     }
 
     return res.sendStatus(200);
   } catch (e) {
-    next(e);
+    return next(e);
   }
 });
 
 app.get('/api/config', async (req, res, next) => {
   try {
     const settings = await Settings.findAll({
-      raw: true
+      raw: true,
     });
 
-    const script = settings.find(el => el.key === 'script');
-    const timeout = settings.find(el => el.key === 'timeout');
-    const interpreter = settings.find(el => el.key === 'interpreter');
-
+    const script = settings.find((el) => el.key === 'script');
+    const timeout = settings.find((el) => el.key === 'timeout');
+    const interpreter = settings.find((el) => el.key === 'interpreter');
 
     return res.json({
       script: script.value,
       timeout: timeout.value,
-      interpreter: interpreter.value
+      interpreter: interpreter.value,
     });
   } catch (e) {
-    next(e);
+    return next(e);
   }
 });
 
 app.listen(app.get('port'), () => {
   try {
+    // eslint-disable-next-line no-console
     console.info(`App is listening on http://localhost:${app.get('port')}`);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.warn('App is listening but ip address information are unavailable');
+    // eslint-disable-next-line no-console
     console.error(err);
   }
 });

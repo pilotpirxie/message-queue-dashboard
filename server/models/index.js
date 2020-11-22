@@ -4,5 +4,5 @@ const Settings = require('./settings')(sql.connection, sql.dataTypes);
 
 module.exports = {
   Messages,
-  Settings
-}
+  Settings,
+};

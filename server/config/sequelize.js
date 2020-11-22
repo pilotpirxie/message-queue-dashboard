@@ -18,15 +18,17 @@ const sql = new Sequelize(
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
-    }
+    },
   },
 );
 
 function testConnection(connection = sql, callback = () => {}) {
   connection.authenticate().then(() => {
+    // eslint-disable-next-line no-console
     console.info('Connection has been established successfully');
     callback();
   }).catch((err) => {
+    // eslint-disable-next-line no-console
     console.error(err);
   });
 }
@@ -34,5 +36,5 @@ function testConnection(connection = sql, callback = () => {}) {
 module.exports = {
   testConnection,
   connection: sql,
-  dataTypes: Sequelize.DataTypes
-}
+  dataTypes: Sequelize.DataTypes,
+};

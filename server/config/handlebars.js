@@ -41,30 +41,27 @@ module.exports = {
    * Substrac b from a
    * @param a
    * @param b
-   * @param options
    * @returns {string|*}
    */
-  sub(a, b, options) {
+  sub(a, b) {
     const result = a - b;
     return result;
   },
   /**
    * Format price
    * @param price
-   * @param options
    * @returns {string|*}
    */
-  priceFormat(price, options) {
+  priceFormat(price) {
     const result = price.includes('.') && price.split('.')[1] === '00' ? price.split('.')[0] : price;
     return result;
   },
   /**
    * Date price
    * @param date
-   * @param options
    * @returns {string|*}
    */
-  dateFormat(date, options) {
-    return moment(date).format('DD-MM-YYYY H:m:s');
+  dateFormat(date) {
+    return moment(date).format('DD-MM-YYYY HH:mm:ss');
   },
 };

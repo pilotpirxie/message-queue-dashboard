@@ -12,7 +12,8 @@ module.exports = {
     REGION: 'eu-west-1',
     ACCESS_KEY_ID: '...',
     SECRET_ACCESS_KEY: '...',
-    MESSAGE_VISIBILITY_TIMEOUT: 10 * 60,
+    MESSAGE_VISIBILITY_TIMEOUT: 2 * 60,
     MESSAGE_PROCESSING_TIMEOUT: 2 * 60,
-  }
-}
+    MESSAGE_RETENTION_PERIOD: 30 * 60,
+  },
+};

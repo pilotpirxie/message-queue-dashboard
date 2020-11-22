@@ -1,3 +1,4 @@
+// eslint-disable-next-line func-names
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('messages', {
     id: {
