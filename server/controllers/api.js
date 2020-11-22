@@ -6,7 +6,60 @@ const validation = require('../config/validation');
 
 const router = Router();
 
+/**
+ * Update existing message data if not completed
+ *
+ * @apiParam {string} uuid Message id
+ * @apiParam {string} body Message body
+ * @apiParam {string} status Processing status
+ * @apiParam {string} logs Processing logs
+ */
 router.put('/messages', [validation({
+  body: {
+    uuid: joi.string().required(),
+    body: joi.string().required(),
+    status: joi.valid('WAITING', 'PENDING', 'SUCCESS', 'ERROR').required(),
+    logs: joi.string().allow('').optional(),
+  },
+})], async (req, res, next) => {
+  try {
+    const {
+      uuid, body, status, logs,
+    } = req.body;
+
+    const searchMessage = await Messages.findOne({
+      where: {
+        uuid: uuid.trim(),
+        completed_at: null,
+      },
+    });
+
+    if (!searchMessage) return res.sendStatus(404);
+
+    await searchMessage.update({
+      status,
+      body,
+      processing_at: status === 'PENDING' && searchMessage.status !== 'PENDING' ? moment() : undefined,
+      completed_at: status === 'SUCCESS' || status === 'ERROR' ? moment() : undefined,
+      logs: logs || undefined,
+    });
+
+    return res.sendStatus(200);
+  } catch (e) {
+    return next(e);
+  }
+});
+
+/**
+ * Register new message
+ *
+ * @apiParam {string} uuid Message id
+ * @apiParam {string} body Message body
+ * @apiParam {string} status Processing status
+ * @apiParam {string} name Message name
+ * @apiParam {string} logs Processing logs
+ */
+router.post('/messages', [validation({
   body: {
     uuid: joi.string().required(),
     body: joi.string().required(),
@@ -16,30 +69,13 @@ router.put('/messages', [validation({
   },
 })], async (req, res, next) => {
   try {
-    const searchMessage = await Messages.findOne({
-      where: {
-        uuid: req.body.uuid.trim(),
-        completed_at: null,
-      },
+    await Messages.create({
+      uuid: req.body.uuid,
+      status: req.body.status,
+      body: req.body.body,
+      name: req.body.name || undefined,
+      logs: req.body.logs || undefined,
     });
-
-    if (searchMessage) {
-      await searchMessage.update({
-        status: req.body.status,
-        body: req.body.body,
-        processing_at: req.body.status === 'PENDING' && searchMessage.status !== 'PENDING' ? moment() : undefined,
-        completed_at: req.body.status === 'SUCCESS' || req.body.status === 'ERROR' ? moment() : undefined,
-        logs: req.body.logs || undefined,
-      });
-    } else {
-      await Messages.create({
-        uuid: req.body.uuid,
-        status: req.body.status,
-        name: req.body.name || undefined,
-        body: req.body.body,
-        logs: req.body.logs || undefined,
-      });
-    }
 
     return res.sendStatus(200);
   } catch (e) {
@@ -47,6 +83,9 @@ router.put('/messages', [validation({
   }
 });
 
+/**
+ * Get config
+ */
 router.get('/config', async (req, res, next) => {
   try {
     const settings = await Settings.findAll({
@@ -58,9 +97,9 @@ router.get('/config', async (req, res, next) => {
     const interpreter = settings.find((el) => el.key === 'interpreter');
 
     return res.json({
-      script: script.value,
-      timeout: timeout.value,
-      interpreter: interpreter.value,
+      script: script.value || '',
+      timeout: timeout.value || '',
+      interpreter: interpreter.value || '',
     });
   } catch (e) {
     return next(e);

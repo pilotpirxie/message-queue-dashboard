@@ -9,10 +9,18 @@ const config = require('../config/config');
 
 const router = Router();
 
+/**
+ * Redirect from index to messages view
+ */
 router.get('/', async (req, res) => {
   res.redirect('/messages/');
 });
 
+/**
+ * Get home page
+ *
+ * @apiParam {number} messageId Message id
+ */
 router.get('/messages/:messageId?', [validation({
   params: {
     messageId: joi.number().optional(),
@@ -54,6 +62,40 @@ router.get('/messages/:messageId?', [validation({
   }
 });
 
+/**
+ * Send new message to the queue and register in db
+ *
+ * @apiParam {string} body Message body
+ * @apiParam {string} name Message name
+ */
+router.post('/messages', [validation({
+  body: {
+    body: joi.string().required(),
+    name: joi.string().allow('').optional(),
+  },
+})], async (req, res, next) => {
+  try {
+    const sqsMessage = await sqs.sendMessage({
+      MessageBody: req.body.body,
+      QueueUrl: config.SQS.QUEUE_URL,
+    }).promise();
+
+    const message = await Messages.create({
+      uuid: sqsMessage.MessageId,
+      status: 'WAITING',
+      name: req.body.name || undefined,
+      body: req.body.body,
+    });
+
+    return res.redirect(`/messages/${message.id}`);
+  } catch (e) {
+    return next(e);
+  }
+});
+
+/**
+ * Get settings page
+ */
 router.get('/settings', async (req, res, next) => {
   try {
     const settings = await Settings.findAll({
@@ -65,19 +107,26 @@ router.get('/settings', async (req, res, next) => {
     const interpreter = settings.find((el) => el.key === 'interpreter');
 
     return res.render('settings', {
-      script,
-      timeout,
-      interpreter,
+      script: script.value || '',
+      timeout: timeout.value || '',
+      interpreter: interpreter.value || '',
     });
   } catch (e) {
     return next(e);
   }
 });
 
+/**
+ * Save new settings
+ *
+ * @apiParam {string} interpreter
+ * @apiParam {number} timeout
+ * @apiParam {string} script
+ */
 router.post('/settings', [validation({
   body: {
     interpreter: joi.string().required(),
-    timeout: joi.string().required(),
+    timeout: joi.number().required(),
     script: joi.string().required(),
   },
 })], async (req, res, next) => {
@@ -107,31 +156,6 @@ router.post('/settings', [validation({
     });
 
     return res.redirect('/settings');
-  } catch (e) {
-    return next(e);
-  }
-});
-
-router.post('/messages', [validation({
-  body: {
-    body: joi.string().required(),
-    name: joi.string().allow('').optional(),
-  },
-})], async (req, res, next) => {
-  try {
-    const sqsMessage = await sqs.sendMessage({
-      MessageBody: req.body.body,
-      QueueUrl: config.SQS.QUEUE_URL,
-    }).promise();
-
-    const message = await Messages.create({
-      uuid: sqsMessage.MessageId,
-      status: 'WAITING',
-      name: req.body.name || undefined,
-      body: req.body.body,
-    });
-
-    return res.redirect(`/messages/${message.id}`);
   } catch (e) {
     return next(e);
   }

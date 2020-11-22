@@ -11,21 +11,21 @@
                 <form method="post" action="/settings">
                     <div class="form-group">
                         <label for="interpreter" class="font-weight-bold">Interpreter:</label>
-                        <select id="interpreter" name="interpreter" value="{{interpreter.value}}" class="form-control">
+                        <select id="interpreter" name="interpreter" value="{{interpreter}}" class="form-control">
                             <option value="/bin/sh">/bin/sh</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="timeout" class="font-weight-bold">Timeout:</label>
-                        <input type="number" class="form-control" name="timeout" id="timeout" placeholder="e.g. 600000" required min="3000" value="{{timeout.value}}">
+                        <input type="number" class="form-control" name="timeout" id="timeout" placeholder="e.g. 600000" required min="3000" value="{{timeout}}">
                     </div>
 
                     <div class="form-group">
                         <b>Script body:</b>
                         <div>
                             <div style="height: 400px;">
-                                <textarea name="script" id="script-body">{{script.value}}</textarea>
+                                <textarea name="script" id="script-body">{{script}}</textarea>
                                 <div class="code-editor" id="settings-editor"></div>
                             </div>
                         </div>

@@ -1,6 +1,11 @@
 const { Sequelize } = require('sequelize');
 const config = require('./config');
 
+/**
+ * Connection handler
+ *
+ * @type {Sequelize | Model<any, *> | Transaction | BelongsTo<Model, Model>}
+ */
 const sql = new Sequelize(
   config.DB.NAME,
   config.DB.USER,
@@ -22,6 +27,12 @@ const sql = new Sequelize(
   },
 );
 
+/**
+ * Check if connection with db is established correctly
+ *
+ * @param connection
+ * @param callback
+ */
 function testConnection(connection = sql, callback = () => {}) {
   connection.authenticate().then(() => {
     // eslint-disable-next-line no-console
