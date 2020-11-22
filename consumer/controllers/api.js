@@ -9,10 +9,16 @@ module.exports = {
    * @returns {Promise<*>}
    */
   async getConfig() {
-    const processConfigResponse = await axios.get(`${config.API_HOST}/api/config`);
-    const processConfig = processConfigResponse.data;
+    return axios.get(`${config.API_HOST}/api/config`);
+  },
 
-    return processConfig;
+  /**
+   * Validate message
+   * @param {string} messageId
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  async validateMessage(messageId) {
+    return axios.get(`${config.API_HOST}/api/messages/${messageId}`);
   },
 
   /**

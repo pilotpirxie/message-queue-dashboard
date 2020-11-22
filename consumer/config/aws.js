@@ -24,12 +24,12 @@ const sqs = new AWS.SQS({
  *
  * @type {function}
  */
-const receiveMessage = sqs.receiveMessage({
+const receiveMessage = () => sqs.receiveMessage({
   MaxNumberOfMessages: 1,
   QueueUrl: config.SQS.QUEUE_URL,
   WaitTimeSeconds: config.SQS.CONNECTION_WAIT_TIME_SECONDS,
   VisibilityTimeout: config.SQS.MESSAGE_VISIBILITY_TIMEOUT,
-}).promise;
+}).promise();
 
 /**
  * Call SQS to delete a message
@@ -40,7 +40,7 @@ const receiveMessage = sqs.receiveMessage({
 const deleteMessage = (ReceiptHandle) => sqs.deleteMessage({
   QueueUrl: config.SQS.QUEUE_URL,
   ReceiptHandle,
-}).promise;
+}).promise();
 
 module.exports = {
   sqs,

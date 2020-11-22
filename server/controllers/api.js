@@ -51,6 +51,33 @@ router.put('/messages', [validation({
 });
 
 /**
+ * Validate message
+ *
+ * @apiParam {string} uuid Message id
+ */
+router.get('/messages/:messageUuid', [validation({
+  params: {
+    messageUuid: joi.string().required(),
+  },
+})], async (req, res, next) => {
+  try {
+    const { messageUuid } = req.params;
+    console.log(messageUuid);
+    const searchMessage = await Messages.findOne({
+      where: {
+        uuid: messageUuid.trim(),
+      },
+    });
+
+    if (!searchMessage) return res.sendStatus(404);
+
+    return res.json(searchMessage);
+  } catch (e) {
+    return next(e);
+  }
+});
+
+/**
  * Register new message
  *
  * @apiParam {string} uuid Message id

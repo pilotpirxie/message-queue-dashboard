@@ -2,13 +2,13 @@
 
 {{> navbar}}
 
-<div class="container" style="overflow: hidden">
+<div class="container shadow-lg mt-2" style="overflow: hidden">
     <div class="row mt-3">
         <div class="col-4" style="height: calc(100vh - 90px); overflow-y: auto">
             <div class="list-group">
                 {{#each messages as |message|}}
                     <a href="/messages/{{message.id}}" class="list-group-item list-group-item-action {{#ifCond message.id '===' ../messageId}}bg-light{{/ifCond}} ">
-                    <span class="d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         {{#ifCond message.status '===' 'PENDING'}}
                             <span class="material-icons text-primary spinner" style="font-size: 2rem;">autorenew</span>
                         {{/ifCond}}
@@ -35,7 +35,7 @@
                                 <div class="small">{{message.uuid}}</div>
                             </div>
                         </div>
-                    </span>
+                    </div>
                     </a>
                 {{/each}}
             </div>
@@ -44,19 +44,19 @@
             <div class="card card-body">
                 {{#if message}}
                     {{#ifCond message.status '===' 'PENDING'}}
-                        <div class="alert alert-primary">⏲ Message delivered, now is under processing</div>
+                        <div class="alert alert-primary shadow">⏲ Message delivered, now is under processing</div>
                     {{/ifCond}}
                     {{#ifCond message.status '===' 'SUCCESS'}}
-                        <div class="alert alert-success">✔ Message successfully processed</div>
+                        <div class="alert alert-success shadow">✔ Message successfully processed</div>
                     {{/ifCond}}
                     {{#ifCond message.status '===' 'ERROR'}}
-                        <div class="alert alert-danger">⚠ Error while processing message</div>
+                        <div class="alert alert-danger shadow">⚠ Error while processing message</div>
                     {{/ifCond}}
                     {{#ifCond message.status '===' 'WAITING'}}
-                        <div class="alert alert-dark">⌛ Message is waiting in the queue</div>
+                        <div class="alert alert-dark shadow">⌛ Message is waiting in the queue</div>
                     {{/ifCond}}
                     {{#ifCond message.status '===' 'CANCEL'}}
-                        <div class="alert alert-dark">❌ Message not dequeue in time</div>
+                        <div class="alert alert-dark shadow">❌ Message not dequeue in time</div>
                     {{/ifCond}}
 
                     <div class="h3 d-flex align-items-center">

@@ -27,7 +27,7 @@ function processLogData(data, message, logsOutput = []) {
  */
 function spawnProcess(interpreter, timeout) {
   return spawn(interpreter, [config.SCRIPT_FILE], {
-    cwd: path.join(__dirname, 'workdir'),
+    cwd: path.join(__dirname, '..', '..', 'workdir'),
     timeout,
   });
 }
@@ -52,8 +52,11 @@ function processMessage(message, interpreter, timeout) {
     subProcess.stderr.on('data', (data) => processLogData(data, message, logsOutput));
 
     subProcess.on('close', (code) => {
-      if (code === 0) setComplete(message, logsOutput, 'SUCCESS').then(() => resolve());
-      else setComplete(message, logsOutput, 'SUCCESS').then(() => reject());
+      if (code === 0) {
+        setComplete(message, logsOutput, 'SUCCESS').then(() => resolve());
+      } else {
+        setComplete(message, logsOutput, 'SUCCESS').then(() => reject());
+      }
     });
   });
 }

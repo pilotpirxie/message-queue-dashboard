@@ -1,7 +1,7 @@
 const { receiveMessage, deleteMessage } = require('../config/aws');
 
 const { clearWorkdir, writeScript } = require('./filesystem');
-const { getConfig } = require('./api');
+const { getConfig, validateMessage } = require('./api');
 const processMessage = require('./processMessage');
 
 /**
@@ -12,20 +12,21 @@ async function listener() {
   while (true) {
     try {
       const { Messages } = await receiveMessage();
-
       if (!Messages || Messages.length === 0) continue;
 
       const message = Messages[0];
+      const messageResponse = await validateMessage(message.MessageId);
+      const messageData = messageResponse.data;
 
-      clearWorkdir();
+      if (messageData && !messageData.completed_at) {
+        clearWorkdir();
+        const configResponse = await getConfig();
+        const { script, timeout, interpreter } = configResponse.data;
+        writeScript(script);
 
-      const { script, timeout, interpreter } = await getConfig();
-
-      writeScript(script);
-
-      await processMessage(message, interpreter, timeout);
-
-      clearWorkdir();
+        await processMessage(message, interpreter, timeout);
+        clearWorkdir();
+      }
 
       await deleteMessage(message.ReceiptHandle);
     } catch (e) {

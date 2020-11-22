@@ -7,7 +7,7 @@ module.exports = {
    * Clear workdir from processing artifacts
    */
   clearWorkdir() {
-    const workdir = path.join(__dirname, config.WORKDIR);
+    const workdir = path.join(__dirname, '..', '..', config.WORKDIR);
 
     if (fs.existsSync(workdir)) {
       fs.rmdirSync(workdir, {
@@ -26,7 +26,7 @@ module.exports = {
   writeScript(scriptData = '') {
     const output = scriptData.replace(/(\r)/gm, '');
 
-    const file = path.join(__dirname, config.WORKDIR, config.SCRIPT_FILE);
+    const file = path.join(__dirname, '..', '..', config.WORKDIR, config.SCRIPT_FILE);
 
     fs.writeFileSync(file, output, {
       encoding: 'utf8',
