@@ -58,7 +58,7 @@ function processMessage(message, interpreter, timeout) {
       if (code === 0) {
         setComplete(message, logsOutput, 'SUCCESS').then(() => resolve());
       } else {
-        setComplete(message, logsOutput, 'SUCCESS').then(() => reject());
+        setComplete(message, logsOutput, 'ERROR').then(() => reject());
       }
     });
   });
