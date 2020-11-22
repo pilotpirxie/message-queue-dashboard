@@ -1,6 +1,6 @@
 
 <p align="center">
- <img src="https://i.imgur.com/1K8jhGr.png" alt="Visual Editor Logo"/>
+ <img src="https://i.imgur.com/RmD159Z.png" alt="Logo"/>
 </p>
 
 # message-queue-dashboard
