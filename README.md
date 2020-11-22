@@ -22,6 +22,11 @@ GUI Dashboard for SQS and ElasticMQ with CI/CD consumer.
  <img src="https://i.imgur.com/a7gm1Jl.png" alt="Project"/>
 </p>
 
+
+<p align="center">
+ <img src="https://i.imgur.com/F3V6K6E.png" alt="Project"/>
+</p>
+
 ## Installation
 ```shell script
 git clone
