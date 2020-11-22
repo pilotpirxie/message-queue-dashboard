@@ -1,2 +1,29 @@
+
+<p align="center">
+ <img src="https://i.imgur.com/1K8jhGr.png" alt="Visual Editor Logo"/>
+</p>
+
 # sqs-gui-consumer
-GUI for SQS Consumer
+GUI Dashboard for SQS and ElasticMQ with CI/CD consumer. 
+
+## Features
+* Works with both SQS and ElasticMQ
+* Register messages in postgres to track status
+* Unlimited consumer scalability
+* Flexible configuration both queue and consumer
+* Manage consumer script with built-in code editor
+* Realtime logs from consumer pipeline
+
+<p align="center">
+ <img src="https://i.imgur.com/5dfqNRW.png" alt="Visual Editor"/>
+</p>
+
+## Installation
+```shell script
+git clone
+yarn
+yarn start
+```
+
+## License
+sqs-gui-consumer is licensed under the MIT.
